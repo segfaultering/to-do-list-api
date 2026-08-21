@@ -11,9 +11,21 @@ dependencies = [
     "fastapi[standard]>=0.141.1",
 ]
 
+[tool.pyrefly]
+project-includes = [
+    "**/*.py*",
+    "**/*.ipynb",
+]
+
 [project.scripts]
 to-do-list-api = "to_do_list_api:main"
 
 [build-system]
 requires = ["uv_build>=0.12.3,<0.13.0"]
 build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pyrefly>=1.2.0",
+    "ruff>=0.16.4",
+]
