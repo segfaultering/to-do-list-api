@@ -1,5 +1,3 @@
-from typing import Annotated
-
 from fastapi import APIRouter, HTTPException, status
 
 from to_do_list_api.schemas import TaskRepr, TaskCreate
@@ -28,7 +26,16 @@ def read_task(
     return tasks[task_id]
 
 
-@router.post("", status_code=status.HTTP_201_CREATED)
+@router.delete("/{task_id}", status_code=204)
+def delete_task(
+    task_id: int,
+) -> None:
+    if task_id not in tasks:
+        raise HTTPException(status_code=404, detail="Task not found")
+    del tasks[task_id]
+
+
+@router.post("")
 def create_task(
     task_create: TaskCreate,
 ) -> TaskRepr:
