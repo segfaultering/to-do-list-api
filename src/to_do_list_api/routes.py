@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status
 
-from to_do_list_api.schemas import TaskRepr, TaskCreate
+from to_do_list_api.schemas import TaskRepr, TaskCreate, TaskUpdate
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
 
@@ -33,6 +33,24 @@ def delete_task(
     if task_id not in tasks:
         raise HTTPException(status_code=404, detail="Task not found")
     del tasks[task_id]
+
+
+@router.put("/{task_id}")
+def update_task(
+    task_id: int,
+    task_update: TaskUpdate,
+) -> TaskRepr:
+    if task_id not in tasks:
+        raise HTTPException(status_code=404, detail="Task not found")
+    if task_update.title is None and task_update.done is None:
+        raise HTTPException(status_code=400, detail="At least one of title or done must be provided")
+    if task_update.title is not None and not task_update.title.strip():
+        raise HTTPException(status_code=400, detail="title must not be empty")
+    existing = tasks[task_id]
+    new_title = task_update.title if task_update.title is not None else existing.title
+    new_done = task_update.done if task_update.done is not None else existing.done
+    tasks[task_id] = TaskRepr(id=task_id, title=new_title, done=new_done)
+    return tasks[task_id]
 
 
 @router.post("")
