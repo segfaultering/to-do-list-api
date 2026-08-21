@@ -53,7 +53,7 @@ def update_task(
     return tasks[task_id]
 
 
-@router.post("")
+@router.post("", status_code=status.HTTP_201_CREATED)
 def create_task(
     task_create: TaskCreate,
 ) -> TaskRepr:
