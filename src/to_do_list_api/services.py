@@ -48,16 +48,11 @@ class TaskService:
             rows = self.conn.execute(
                 "SELECT id, title, done FROM tasks ORDER BY id"
             ).fetchall()
-        return [
-            TaskRepr(id=row[0], title=row[1], done=bool(row[2]))
-            for row in rows
-        ]
+        return [TaskRepr(id=row[0], title=row[1], done=bool(row[2])) for row in rows]
 
     def update(self, id: int, request: TaskUpdate) -> TaskRepr:
         existing = self._fetch_task(id)
-        new_title = (
-            request.title if request.title is not None else existing.title
-        )
+        new_title = request.title if request.title is not None else existing.title
         new_done = request.done if request.done is not None else existing.done
         with self.conn:
             self.conn.execute(
