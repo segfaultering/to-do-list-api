@@ -14,7 +14,7 @@ class TaskService:
             self.conn.execute(
                 """
                 CREATE TABLE IF NOT EXISTS tasks (
-                    id INTEGER PRIMARY KEY,
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
                     title TEXT NOT NULL,
                     done BOOLEAN NOT NULL
                 )
