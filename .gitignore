@@ -9,8 +9,5 @@ wheels/
 # Virtual environments
 .venv
 
-# database
-data/tasks.db
-
 # Env file
 .env

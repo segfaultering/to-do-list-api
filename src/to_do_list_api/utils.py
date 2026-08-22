@@ -1,10 +1,10 @@
-import sqlite3
 from collections.abc import Iterator
 from typing import Annotated
 
+import psycopg
 from fastapi import Depends
 
-from to_do_list_api.config import DB_PATH
+from to_do_list_api.config import DATABASE_URL
 from to_do_list_api.services import TaskService
 
 SEED_TASKS = [
@@ -14,31 +14,33 @@ SEED_TASKS = [
 ]
 
 
-def get_db() -> Iterator[sqlite3.Connection]:
-    conn = sqlite3.connect(DB_PATH, check_same_thread=False)
+def get_db() -> Iterator[psycopg.Connection]:
+    conn = psycopg.connect(DATABASE_URL)
     try:
-        with conn:
-            conn.execute(
+        with conn.cursor() as cur:
+            cur.execute(
                 """
                 CREATE TABLE IF NOT EXISTS tasks (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    id SERIAL PRIMARY KEY,
                     title TEXT NOT NULL,
                     done BOOLEAN NOT NULL
                 )
                 """
             )
-            task_count = conn.execute("SELECT COUNT(*) FROM tasks").fetchone()[0]
+            cur.execute("SELECT COUNT(*) FROM tasks")
+            task_count = cur.fetchone()[0]
             if not task_count:
-                conn.executemany(
-                    "INSERT INTO tasks (title, done) VALUES (?, ?)",
+                cur.executemany(
+                    "INSERT INTO tasks (title, done) VALUES (%s, %s)",
                     SEED_TASKS,
                 )
+        conn.commit()
         yield conn
     finally:
         conn.close()
 
 
-DbConn = Annotated[sqlite3.Connection, Depends(get_db)]
+DbConn = Annotated[psycopg.Connection, Depends(get_db)]
 
 
 def get_task_service(conn: DbConn) -> TaskService:

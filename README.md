@@ -13,16 +13,22 @@ This API provides endpoints to manage a to-do list:
 
 ## Database
 
-This API stores tasks in a **SQLite** database (`data/tasks.db`). The previous version used a simple in-memory dictionary, which meant all data was lost every time the server restarted. Switching to SQLite solves this by persisting tasks to disk.
+This API stores tasks in a **PostgreSQL** database. The database runs as a Docker container (image: `postgres:16-trixie`) and is managed via the `run.sh` script, which handles container creation and startup automatically.
 
-**What is SQLite?** SQLite is a lightweight, self-contained relational database engine. Unlike traditional database servers (PostgreSQL, MySQL), it runs entirely within your application process and stores the entire database in a single file. It requires no separate server process, no configuration, and no external dependencies.
+The connection string is loaded from a `.env` file at the project root using `python-dotenv`. See `.env.example` for the expected variables:
 
-**Why SQLite over an in-memory store?**
+```
+POSTGRES_PASSWORD=password
+POSTGRES_DB=tasks
+DATABASE_URL=postgresql://postgres:password@localhost:5432/tasks
+```
 
-- **Persistence** -- Data survives server restarts and process crashes.
-- **Querying** -- SQL gives you powerful filtering, ordering, and aggregation capabilities that are tedious to implement manually with dictionaries.
-- **Concurrency safety** -- SQLite handles concurrent access with built-in locking, avoiding race conditions.
-- **Portability** -- The entire database is a single file that can be copied, backed up, or inspected with tools like [SQLiteBrowser](https://sqlitebrowser.org/).
+**Why PostgreSQL over SQLite?**
+
+- **Concurrency** -- PostgreSQL handles many simultaneous connections efficiently with MVCC, while SQLite serializes writes.
+- **Advanced features** -- Full support for JSON columns, full-text search, window functions, CTEs, and more.
+- **Scalability** -- Can be scaled to handle large datasets and high throughput workloads.
+- **Production standard** -- Battle-tested in production systems worldwide with robust replication and backup tooling.
 
 ## Setup & Running
 
@@ -30,6 +36,7 @@ This API stores tasks in a **SQLite** database (`data/tasks.db`). The previous v
 
 - Python 3.12+
 - `uv` package manager
+- Docker (for the PostgreSQL container)
 
 ### Installation
 
@@ -40,6 +47,10 @@ cd to-do-list-api
 
 # Install dependencies
 uv sync
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your preferred credentials
 ```
 
 ### Running the server
@@ -59,10 +70,6 @@ The server will start at `http://localhost:8000`.
 #### OpenAPI/SwaggerUI docs
 
 ![OpenAPI docs](media/openapi_docs.PNG)
-
-#### SQLite database (via SQLiteBrowser)
-
-![SQLiteBrowser](media/sqlitebrowser.PNG)
 
 ## API Endpoints
 
