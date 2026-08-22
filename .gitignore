@@ -11,3 +11,6 @@ wheels/
 
 # database
 data/tasks.db
+
+# Env file
+.env
