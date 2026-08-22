@@ -10,16 +10,6 @@ class TaskNotFoundError(Exception):
 class TaskService:
     def __init__(self, conn: sqlite3.Connection) -> None:
         self.conn = conn
-        with self.conn:
-            self.conn.execute(
-                """
-                CREATE TABLE IF NOT EXISTS tasks (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    title TEXT NOT NULL,
-                    done BOOLEAN NOT NULL
-                )
-                """
-            )
 
     def _fetch_task(self, task_id: int) -> TaskRepr:
         with self.conn:

@@ -11,6 +11,19 @@ This API provides endpoints to manage a to-do list:
 - Update an existing task
 - Delete a task
 
+## Database
+
+This API stores tasks in a **SQLite** database (`data/tasks.db`). The previous version used a simple in-memory dictionary, which meant all data was lost every time the server restarted. Switching to SQLite solves this by persisting tasks to disk.
+
+**What is SQLite?** SQLite is a lightweight, self-contained relational database engine. Unlike traditional database servers (PostgreSQL, MySQL), it runs entirely within your application process and stores the entire database in a single file. It requires no separate server process, no configuration, and no external dependencies.
+
+**Why SQLite over an in-memory store?**
+
+- **Persistence** -- Data survives server restarts and process crashes.
+- **Querying** -- SQL gives you powerful filtering, ordering, and aggregation capabilities that are tedious to implement manually with dictionaries.
+- **Concurrency safety** -- SQLite handles concurrent access with built-in locking, avoiding race conditions.
+- **Portability** -- The entire database is a single file that can be copied, backed up, or inspected with tools like [SQLiteBrowser](https://sqlitebrowser.org/).
+
 ## Setup & Running
 
 ### Prerequisites
@@ -46,6 +59,10 @@ The server will start at `http://localhost:8000`.
 #### OpenAPI/SwaggerUI docs
 
 ![OpenAPI docs](media/openapi_docs.PNG)
+
+#### SQLite database (via SQLiteBrowser)
+
+![SQLiteBrowser](media/sqlitebrowser.PNG)
 
 ## API Endpoints
 
