@@ -1,0 +1,19 @@
+name: tdlapi
+
+
+services:
+  api:
+    build: .
+    env_file: .env.db
+    ports:
+      - "7777:8000"
+    depends_on: [db]
+
+  db:
+    image: postgres:16-trixie
+    env_file: .env.db
+    volumes:
+      - taskdata:/var/lib/postgresql/data 
+
+volumes:
+  taskdata:

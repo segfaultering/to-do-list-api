@@ -1,0 +1,14 @@
+# Directories
+__pycache__/
+.venv/
+.git/
+.ruff_cache/
+data/
+
+media/
+
+.gitignore
+.env.db
+.env.example
+
+compose.yaml
